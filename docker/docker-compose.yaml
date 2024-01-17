@@ -1,0 +1,67 @@
+version: "3"
+
+networks:
+    backend:
+        driver: bridge
+
+services:
+
+    php-fpm:
+        container_name: sl-php-fpm
+        image: ls-php:${PHP_VERSION}
+        build:
+            context: ./php-fpm
+            args:
+                TZ: ${TZ}
+                PHP_VERSION: ${PHP_VERSION}
+                USER_ID: ${USER_ID}
+                GROUP_ID: ${GROUP_ID}
+        restart: unless-stopped
+        depends_on:
+            - mysql
+        volumes:
+            - ./../app:/app:rw,cached
+        networks:
+            - backend
+
+    nginx:
+        container_name: sl-nginx
+        image: sl-nginx:${NGINX_VERSION}
+        build:
+            context: ./nginx
+            args:
+                TZ: ${TZ}
+                NGINX_VERSION: ${NGINX_VERSION}
+        restart: unless-stopped
+        depends_on:
+            - php-fpm
+        ports:
+            - "80:80"
+        volumes:
+            - ./../app/public:/app/public
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/conf.d:/etc/nginx/conf.d
+        command: /bin/bash -c "exec nginx -g 'daemon off;'"
+        networks:
+            - backend
+
+    mysql:
+        container_name: sl-mysql
+        image: sl-mysql:${MYSQL_VERSION}
+        build:
+            context: ./mysql
+            args:
+                MYSQL_VERSION: ${MYSQL_VERSION}
+        restart: unless-stopped
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql:/var/lib/mysql
+        env_file:
+            - ./mysql/.env
+        networks:
+            - backend
+
+volumes:
+    mysql:
+        driver: local
