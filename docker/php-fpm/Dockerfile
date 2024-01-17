@@ -7,6 +7,9 @@ ARG USER_ID
 ARG GROUP_ID
 
 RUN apt-get update && apt-get install --no-install-recommends --no-install-suggests -y \
+        git \
+        unzip \
+        libzip-dev \
         libicu-dev \
         zlib1g-dev \
         libpq-dev \
@@ -20,8 +23,9 @@ RUN set -xe \
         intl \
         opcache \
         pdo \
-        pdo_pgsql \
-        sodium
+        pdo_mysql \
+        sodium \
+        zip
 
 COPY ./php.ini /usr/local/etc/php/php.ini
 RUN sed -i -e "s#TIMEZONE#${TZ}#g" /usr/local/etc/php/php.ini
@@ -29,10 +33,10 @@ RUN sed -i -e "s#TIMEZONE#${TZ}#g" /usr/local/etc/php/php.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN mkdir -p /var/www/.composer && chown -R www-data /var/www/.composer
-
 RUN usermod -u ${USER_ID} www-data && \
     groupmod -g ${GROUP_ID} www-data
+
+RUN mkdir -p /var/www/.composer && chown www-data:www-data -R /var/www/.composer
 
 WORKDIR /app
 
