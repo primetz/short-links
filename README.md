@@ -6,3 +6,5 @@ cd short-links && \
 docker compose -f ./docker/docker-compose.yaml up -d --build && \
 docker exec -ti sl-php-fpm php bin/console doctrine:migrations:migrate -n
 ```
+
+### [http://localhost/api](http://localhost/api) - документация API
