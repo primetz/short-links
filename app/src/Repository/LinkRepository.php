@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Link;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -36,13 +37,20 @@ class LinkRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Link
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findOneByToken($value): ?Link
+    {
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.token.token = :val')
+            ->andWhere('l.deletedAt > :date')
+            ->setParameters([
+                'val' => $value,
+                'date' => new \DateTimeImmutable(),
+            ])
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

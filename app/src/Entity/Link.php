@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Entity\ValueObject\Token;
 use App\Entity\ValueObject\Url;
 use App\Repository\LinkRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
-
+#[ApiResource]
 class Link
 {
     #[ORM\Id]
@@ -68,6 +69,13 @@ class Link
     public function setViews(int $views): static
     {
         $this->views = $views;
+
+        return $this;
+    }
+
+    public function incrementViews(): static
+    {
+        $this->views++;
 
         return $this;
     }
