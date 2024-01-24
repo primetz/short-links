@@ -3,6 +3,7 @@
 ```shell
 git clone -b thin-with-uuid https://github.com/primetz/short-links.git && \
 docker compose -f ./short-links/docker/docker-compose.yaml up -d --build && \
+docker exec -ti sl-php-fpm composer install && \
 sleep 10 && \
 docker exec -ti sl-php-fpm php bin/console doctrine:migrations:migrate -n
 ```
