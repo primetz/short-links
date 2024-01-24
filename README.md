@@ -10,8 +10,8 @@ docker exec -ti sl-php-fpm php bin/console doctrine:migrations:migrate -n
 
 ### :spider: Методы API
 
-#### $\color{#3caab5}{\mathsf{GET}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Получить ссылку по токену
-#### <span style="color: #3caab5;">GET [http://localhost/api/links](http://localhost/api/links)</span> - Получить все ссылки
+#### $\color{#3caab5}{\textsf{GET}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Получить ссылку по токену
+#### $\color{#3caab5}{\textsf{GET}}$[http://localhost/api/links](http://localhost/api/links) - Получить все ссылки
 Необязательное поле с фильтрами
 ```js
 {
@@ -19,18 +19,18 @@ docker exec -ti sl-php-fpm php bin/console doctrine:migrations:migrate -n
     "views": 34      // Необязательное поле типа int в выборку попадут все ссылки у которых больше 34 просмотров
 }
 ```
-#### <span style="color: #78bc61;">POST [http://localhost/api/links](http://localhost/api/links)</span> - Создать ссылку
+#### $\color{#78bc61}{\textsf{POST}}$ [http://localhost/api/links](http://localhost/api/links) - Создать ссылку
 ```js
 {
     "url": "https://www.php.net/manual/en/function.parse-url.php", // Обязательное поле - валидный url
      "deletedAt": "2025-02-04"                                     // Необязательное поле в формате "Y-m-d"
 }
 ```
-#### <span style="color: #50e3c2;">PATCH [http://localhost/api/links/{token}](http://localhost/api/links/{token})</span> - Обновить ссылку
+#### $\color{#50e3c2}{\textsf{PATCH}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Обновить ссылку
 ```js
 {
     "url": "https://www.php.net/manual/ru/filter.filters.validate.php", // Необязательное поле - валидный url
     "deletedAt": "11 hours"                                              // Необязательное поле в формате "int years|months|days|hours"
 }
 ```
-#### <span style="color: #ed6a5a;">DELETE [http://localhost/api/links/{token}](http://localhost/api/links/{token})</span> - Удалить ссылку - soft delete
+#### $\color{#ed6a5a}{\textsf{DELETE}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Удалить ссылку - soft delete
