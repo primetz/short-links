@@ -90,13 +90,7 @@ class LinkController extends AbstractController
         }
 
         try {
-            if (!is_null($updateLinkDto->lifetime)) {
-                $link->setLifetime($updateLinkDto->lifetime);
-            }
-
-            if (!is_null($updateLinkDto->url)) {
-                $link->setUrl($updateLinkDto->url);
-            }
+            $link->updateFromDto($updateLinkDto);
 
             $this->entityManager->persist($link);
             $this->entityManager->flush();

@@ -12,5 +12,5 @@ class UpdateLinkDto extends ApiDto
     public ?string $url = null;
 
     #[Assert\Regex(pattern: '/^\d+ years|months|days|hours$/', message: 'The {{ value }} is not a valid')]
-    public ?string $lifetime = null;
+    public ?string $deletedAt = null;
 }

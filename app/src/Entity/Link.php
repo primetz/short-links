@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Dto\ApiDtoInterface;
+use App\Dto\UpdateLinkDto;
 use App\Repository\LinkRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -65,6 +67,13 @@ class Link
         return $this;
     }
 
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function trimUrl(): void
+    {
+        $this->url = rtrim(trim($this->url), '/');
+    }
+
     public function getViews(): string
     {
         return $this->views;
@@ -92,6 +101,20 @@ class Link
     public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
     {
         $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * @param UpdateLinkDto $apiDto
+     * @return $this
+     * @throws \Exception
+     */
+    public function updateFromDto(ApiDtoInterface $apiDto): static
+    {
+        $this->url = $apiDto->url ?? $this->url;
+
+        $apiDto->deletedAt ? $this->setLifetime($apiDto->deletedAt) : false;
 
         return $this;
     }
