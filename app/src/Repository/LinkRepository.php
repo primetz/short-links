@@ -6,6 +6,8 @@ use App\Entity\Link;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Link>
@@ -40,15 +42,11 @@ class LinkRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findOneByToken($value): ?Link
+    public function findOneByToken($token): ?Link
     {
         return $this->createQueryBuilder('l')
-            ->andWhere('l.token.token = :val')
-            ->andWhere('l.deletedAt > :date')
-            ->setParameters([
-                'val' => $value,
-                'date' => new \DateTimeImmutable(),
-            ])
+            ->andWhere('l.id = :id')
+            ->setParameter('id', Uuid::fromBase58($token), UuidType::NAME)
             ->getQuery()
             ->getOneOrNullResult()
         ;

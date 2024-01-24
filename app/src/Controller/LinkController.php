@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class LinkController extends AbstractController
 {
@@ -23,17 +23,15 @@ class LinkController extends AbstractController
     #[Route('/{token}', name: 'app_link')]
     public function index(string $token, LinkRepository $linkRepository): Response
     {
-        if ($link = $linkRepository->findOneByToken($token)) {
-
-            $link->incrementViews();
-
-            $this->entityManager->persist($link);
-            $this->entityManager->flush();
-
-
-            return $this->redirect($link->getUrl());
+        if (!$link = $linkRepository->findOneByToken($token)) {
+            return $this->redirect('https://google.com');
         }
 
-        return $this->redirect('https://google.com');
+        $link->incrementViews();
+
+        $this->entityManager->persist($link);
+        $this->entityManager->flush();
+
+        return $this->redirect($link->getUrl());
     }
 }

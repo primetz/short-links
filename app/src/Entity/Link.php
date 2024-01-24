@@ -2,71 +2,75 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Entity\ValueObject\Token;
-use App\Entity\ValueObject\Url;
 use App\Repository\LinkRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: LinkRepository::class)]
-#[ApiResource]
+#[ORM\HasLifecycleCallbacks]
 class Link
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
-    #[ORM\Embedded(class: Url::class, columnPrefix: false)]
-    private ?Url $url = null;
+    #[Groups(['read'])]
+    private ?string $token = null;
 
-    #[ORM\Embedded(class: Token::class, columnPrefix: false)]
-    private ?Token $token = null;
+    #[ORM\Column(type: Types::TEXT, length: 65535)]
+    #[Groups(['read'])]
+    private ?string $url = null;
 
-    #[ORM\Column(options: ['default' => 0])]
-    private ?int $views = null;
+    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['default' => 0])]
+    #[Groups(['read'])]
+    private string $views = '0';
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
+    #[Groups(['read'])]
     private ?\DateTimeImmutable $deletedAt = null;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function getUrl(): ?Url
+    #[ORM\PostLoad]
+    #[ORM\PostPersist]
+    public function setToken(): static
+    {
+        $this->token = $this->id->toBase58();
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    public function setUrl(Url $url): static
+    public function setUrl(string $url): static
     {
         $this->url = $url;
 
         return $this;
     }
 
-    public function getToken(): ?Token
-    {
-        return $this->token;
-    }
-
-    public function setToken(Token $token): static
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    public function getViews(): ?int
+    public function getViews(): string
     {
         return $this->views;
     }
 
-    public function setViews(int $views): static
+    public function setViews(string $views): static
     {
         $this->views = $views;
 
@@ -80,26 +84,24 @@ class Link
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getDeletedAt(): ?\DateTimeImmutable
     {
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(\DateTimeImmutable $deletedAt): static
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
     {
         $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function setLifetime(string $lifetime): static
+    {
+        $this->deletedAt = new \DateTimeImmutable('+' . $lifetime);
 
         return $this;
     }
