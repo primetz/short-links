@@ -10,7 +10,7 @@ docker exec -ti sl-php-fpm php bin/console doctrine:migrations:migrate -n
 
 ### :spider: Методы API
 
-#### $\color{#3caab5}{\textss{GET}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Получить ссылку по токену
+#### $\color{#3caab5}{\mathsf{GET}}$ [http://localhost/api/links/{token}](http://localhost/api/links/{token}) - Получить ссылку по токену
 #### <span style="color: #3caab5;">GET [http://localhost/api/links](http://localhost/api/links)</span> - Получить все ссылки
 Необязательное поле с фильтрами
 ```js
